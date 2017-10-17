@@ -18,6 +18,7 @@ import * as sinon from 'sinon';
 import makeFakeSWReg from './make-fake-sw-reg';
 import dbTMHelper from './db-token-manager';
 import TokenManager from '../src/models/token-manager';
+import TokenDetailsManager from '../src/models/token-details-model';
 import Errors from '../src/models/errors';
 import arrayBufferToBase64 from '../src/helpers/array-buffer-to-base64';
 
@@ -41,6 +42,7 @@ describe('Firebase Messaging > tokenManager.createToken()', function() {
   };
 
   let globalTokenManager = null;
+  let globalTokenDetailsManager = null;
   let stubs = [];
 
   beforeEach(function() {
@@ -56,6 +58,10 @@ describe('Firebase Messaging > tokenManager.createToken()', function() {
 
     return Promise.all([
       globalTokenManager.closeDatabase(),
+      () => {
+        return globalTokenDetailsManager ?
+          globalTokenDetailsManager.closeDatabase(): Promise.resolve();
+      },
       dbTMHelper.closeDatabase()
     ]);
   });
@@ -304,6 +310,7 @@ describe('Firebase Messaging > tokenManager.createToken()', function() {
     ];
 
     globalTokenManager = new TokenManager();
+    globalTokenDetailsManager = new TokenDetailsManager();
 
     return validCombos.reduce((promiseChain, validCombo) => {
       return promiseChain.then(() => {
@@ -314,7 +321,7 @@ describe('Firebase Messaging > tokenManager.createToken()', function() {
           })
           .then(() => {
             // Ensure details are saved correctly
-            return globalTokenManager.getTokenDetailsFromToken(
+            return globalTokenDetailsManager.getTokenDetailsFromToken(
               validCombo.expectedToken
             );
           })
