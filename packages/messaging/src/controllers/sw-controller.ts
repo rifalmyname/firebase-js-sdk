@@ -135,14 +135,16 @@ export default class SWController extends ControllerInterface {
         .catch(err => {
           // The best thing we can do is log this to the terminal so
           // developers might notice the error.
-          return tokenDetailsModel.deleteToken(tokenDetails.fcmToken).then(() => {
-            throw this.errorFactory_.create(
-              Errors.codes.UNABLE_TO_RESUBSCRIBE,
-              {
-                message: err
-              }
-            );
-          });
+          return tokenDetailsModel
+            .deleteToken(tokenDetails.fcmToken)
+            .then(() => {
+              throw this.errorFactory_.create(
+                Errors.codes.UNABLE_TO_RESUBSCRIBE,
+                {
+                  message: err
+                }
+              );
+            });
         });
     });
 
